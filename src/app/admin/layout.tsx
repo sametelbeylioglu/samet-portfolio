@@ -1,11 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   User, Briefcase, FolderKanban, Code2, GraduationCap, Award,
-  Settings, FileText, Newspaper, Phone, LayoutDashboard, ArrowLeft, Eye
+  Settings, FileText, Newspaper, Phone, LayoutDashboard, Eye, LogOut
 } from "lucide-react";
+import { isAuthenticated, logout, getUsername } from "@/lib/auth";
 
 const navItems = [
   { href: "/admin", icon: LayoutDashboard, label: "Panel" },
@@ -24,13 +26,44 @@ const navItems = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [checked, setChecked] = useState(false);
+  const [authed, setAuthed] = useState(false);
+
+  useEffect(() => {
+    if (pathname === "/admin/login") {
+      setChecked(true);
+      setAuthed(false);
+      return;
+    }
+    const ok = isAuthenticated();
+    if (!ok) {
+      router.replace("/admin/login");
+    } else {
+      setAuthed(true);
+    }
+    setChecked(true);
+  }, [pathname, router]);
+
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
+
+  if (!checked || !authed) {
+    return <div className="min-h-screen bg-black" />;
+  }
+
+  const handleLogout = () => {
+    logout();
+    router.replace("/admin/login");
+  };
 
   return (
     <div className="min-h-screen flex bg-black">
       <aside className="w-56 shrink-0 border-r border-[rgba(255,255,255,0.04)] p-4 flex flex-col">
         <div className="mb-6 px-2">
-          <p className="text-[#f5f5f7] text-sm font-semibold tracking-[-0.02em]">samet.</p>
-          <p className="text-[10px] text-[#48484a] font-mono mt-0.5">ADMIN</p>
+          <p className="text-[#f5f5f7] text-sm font-semibold tracking-[-0.02em]">samet<span className="text-[#3a3a3c]">.</span></p>
+          <p className="text-[10px] text-[#3a3a3c] font-mono mt-0.5">ADMIN · {getUsername()}</p>
         </div>
 
         <nav className="flex-1 space-y-0.5">
@@ -51,10 +84,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        <div className="mt-auto pt-4 border-t border-[rgba(255,255,255,0.04)] space-y-1">
+        <div className="mt-auto pt-4 border-t border-[rgba(255,255,255,0.04)] space-y-0.5">
           <Link href="/" className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] text-[#6e6e73] hover:text-[#86868b] transition-colors">
             <Eye className="h-4 w-4" /> Siteyi Gör
           </Link>
+          <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] text-[#ff453a] hover:bg-[rgba(255,69,58,0.06)] transition-colors w-full">
+            <LogOut className="h-4 w-4" /> Çıkış Yap
+          </button>
         </div>
       </aside>
 

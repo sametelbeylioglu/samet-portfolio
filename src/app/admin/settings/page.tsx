@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { getSectionVisibility, setSectionVisibility, getSiteTitle, setSiteTitle, getFavicon, setFavicon, type SectionVisibility } from "@/lib/content-manager";
+import { changePassword, changeUsername, getUsername } from "@/lib/auth";
+import { Shield, Eye, EyeOff } from "lucide-react";
 
 export default function AdminSettingsPage() {
   const [visibility, setVisibilityState] = useState<SectionVisibility>({
@@ -11,9 +13,19 @@ export default function AdminSettingsPage() {
   const [siteTitle, setSiteTitleState] = useState("");
   const [saved, setSaved] = useState(false);
 
+  const [currentUser, setCurrentUser] = useState("");
+  const [newUser, setNewUser] = useState("");
+  const [curPw, setCurPw] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [newPw2, setNewPw2] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [pwMsg, setPwMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [userMsg, setUserMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
   useEffect(() => {
     getSectionVisibility().then(setVisibilityState);
     getSiteTitle().then(setSiteTitleState);
+    setCurrentUser(getUsername());
   }, []);
 
   const save = async () => {
@@ -35,19 +47,42 @@ export default function AdminSettingsPage() {
     reader.readAsDataURL(file);
   };
 
+  const handleChangePassword = async () => {
+    setPwMsg(null);
+    if (!curPw || !newPw) { setPwMsg({ ok: false, text: "Tüm alanları doldurun." }); return; }
+    if (newPw.length < 6) { setPwMsg({ ok: false, text: "Yeni şifre en az 6 karakter olmalı." }); return; }
+    if (newPw !== newPw2) { setPwMsg({ ok: false, text: "Yeni şifreler eşleşmiyor." }); return; }
+
+    const ok = await changePassword(curPw, newPw);
+    if (ok) {
+      setPwMsg({ ok: true, text: "Şifre başarıyla değiştirildi." });
+      setCurPw(""); setNewPw(""); setNewPw2("");
+    } else {
+      setPwMsg({ ok: false, text: "Mevcut şifre yanlış." });
+    }
+  };
+
+  const handleChangeUsername = async () => {
+    setUserMsg(null);
+    if (!newUser || newUser.length < 3) { setUserMsg({ ok: false, text: "Kullanıcı adı en az 3 karakter olmalı." }); return; }
+    const ok = await changeUsername(newUser);
+    if (ok) {
+      setUserMsg({ ok: true, text: "Kullanıcı adı değiştirildi." });
+      setCurrentUser(newUser);
+      setNewUser("");
+    }
+  };
+
   const sections: { key: keyof SectionVisibility; label: string }[] = [
-    { key: "hero", label: "Hero" },
-    { key: "about", label: "Hakkımda" },
-    { key: "services", label: "Hizmetler" },
-    { key: "projects", label: "Projeler" },
-    { key: "skills", label: "Yetkinlikler" },
-    { key: "certificates", label: "Sertifikalar" },
-    { key: "experience", label: "Deneyim" },
-    { key: "education", label: "Eğitim" },
-    { key: "blog", label: "Blog" },
-    { key: "news", label: "Haberler" },
+    { key: "hero", label: "Hero" }, { key: "about", label: "Hakkımda" },
+    { key: "services", label: "Hizmetler" }, { key: "projects", label: "Projeler" },
+    { key: "skills", label: "Yetkinlikler" }, { key: "certificates", label: "Sertifikalar" },
+    { key: "experience", label: "Deneyim" }, { key: "education", label: "Eğitim" },
+    { key: "blog", label: "Blog" }, { key: "news", label: "Haberler" },
     { key: "contact", label: "İletişim" },
   ];
+
+  const inputCls = "w-full bg-[#1d1d1f] border border-[rgba(255,255,255,0.08)] text-[#f5f5f7] placeholder:text-[#3a3a3c] rounded-xl px-4 py-3 text-sm outline-none focus:border-[rgba(255,255,255,0.15)] transition-colors";
 
   return (
     <div>
@@ -58,28 +93,63 @@ export default function AdminSettingsPage() {
         </button>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
+        {/* Güvenlik */}
         <div className="glass rounded-2xl border border-[rgba(255,255,255,0.04)] p-6">
-          <h2 className="section-label mb-6">Genel</h2>
+          <h2 className="flex items-center gap-2 text-[#f5f5f7] font-semibold mb-6"><Shield className="w-4 h-4 text-[#48484a]" /> Güvenlik</h2>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Kullanıcı adı */}
+            <div>
+              <p className="text-[11px] text-[#3a3a3c] font-mono tracking-[0.15em] mb-4">KULLANICI ADI</p>
+              <p className="text-[13px] text-[#6e6e73] mb-3">Mevcut: <span className="text-[#f5f5f7] font-mono">{currentUser}</span></p>
+              <input value={newUser} onChange={e => setNewUser(e.target.value)} placeholder="Yeni kullanıcı adı" className={inputCls} />
+              <button onClick={handleChangeUsername} className="mt-3 rounded-full text-[13px] px-5 h-9 bg-[rgba(255,255,255,0.04)] text-[#86868b] hover:text-[#f5f5f7] border border-[rgba(255,255,255,0.06)] hover:border-[rgba(255,255,255,0.12)] transition-all">Değiştir</button>
+              {userMsg && <p className={`text-[12px] mt-2 ${userMsg.ok ? "text-[#30d158]" : "text-[#ff453a]"}`}>{userMsg.text}</p>}
+            </div>
+
+            {/* Şifre */}
+            <div>
+              <p className="text-[11px] text-[#3a3a3c] font-mono tracking-[0.15em] mb-4">ŞİFRE DEĞİŞTİR</p>
+              <div className="space-y-3">
+                <div className="relative">
+                  <input type={showPw ? "text" : "password"} value={curPw} onChange={e => setCurPw(e.target.value)} placeholder="Mevcut şifre" className={inputCls + " pr-10"} />
+                  <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#3a3a3c] hover:text-[#6e6e73]">
+                    {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <input type={showPw ? "text" : "password"} value={newPw} onChange={e => setNewPw(e.target.value)} placeholder="Yeni şifre (min 6)" className={inputCls} />
+                <input type={showPw ? "text" : "password"} value={newPw2} onChange={e => setNewPw2(e.target.value)} placeholder="Yeni şifre tekrar" className={inputCls} />
+              </div>
+              <button onClick={handleChangePassword} className="mt-3 rounded-full text-[13px] px-5 h-9 bg-[rgba(255,255,255,0.04)] text-[#86868b] hover:text-[#f5f5f7] border border-[rgba(255,255,255,0.06)] hover:border-[rgba(255,255,255,0.12)] transition-all">Şifreyi Değiştir</button>
+              {pwMsg && <p className={`text-[12px] mt-2 ${pwMsg.ok ? "text-[#30d158]" : "text-[#ff453a]"}`}>{pwMsg.text}</p>}
+            </div>
+          </div>
+        </div>
+
+        {/* Genel */}
+        <div className="glass rounded-2xl border border-[rgba(255,255,255,0.04)] p-6">
+          <h2 className="text-[#f5f5f7] font-semibold mb-6">Genel</h2>
           <div className="space-y-5">
             <div>
-              <label className="text-xs text-[#6e6e73] block mb-1.5">Site Başlığı (sekme)</label>
-              <input value={siteTitle} onChange={(e) => setSiteTitleState(e.target.value)} placeholder="Samet Elbeylioğlu | Portfolyo" className="w-full bg-[#1d1d1f] border border-[rgba(255,255,255,0.08)] text-[#f5f5f7] placeholder:text-[#48484a] rounded-xl px-4 py-3 text-sm outline-none focus:border-[rgba(255,255,255,0.15)] transition-colors" />
+              <label className="text-[11px] text-[#3a3a3c] font-mono tracking-[0.15em] block mb-2">SİTE BAŞLIĞI</label>
+              <input value={siteTitle} onChange={(e) => setSiteTitleState(e.target.value)} placeholder="Samet Elbeylioğlu | Portfolyo" className={inputCls} />
             </div>
             <div>
-              <label className="text-xs text-[#6e6e73] block mb-1.5">Favicon</label>
+              <label className="text-[11px] text-[#3a3a3c] font-mono tracking-[0.15em] block mb-2">FAVICON</label>
               <input type="file" accept="image/*" onChange={handleFavicon} className="text-sm text-[#6e6e73]" />
             </div>
           </div>
         </div>
 
+        {/* Bölüm görünürlüğü */}
         <div className="glass rounded-2xl border border-[rgba(255,255,255,0.04)] p-6">
-          <h2 className="section-label mb-2">Bölüm Görünürlüğü</h2>
-          <p className="text-sm text-[#6e6e73] mb-6">Ana sayfada hangi bölümlerin görüneceğini seçin.</p>
-          <div className="grid md:grid-cols-2 gap-4">
+          <h2 className="text-[#f5f5f7] font-semibold mb-2">Bölüm Görünürlüğü</h2>
+          <p className="text-[13px] text-[#48484a] mb-6">Ana sayfada hangi bölümlerin görüneceğini seçin.</p>
+          <div className="grid md:grid-cols-2 gap-3">
             {sections.map((s) => (
-              <label key={s.key} className="flex items-center gap-3 cursor-pointer text-sm text-[#86868b] hover:text-[#f5f5f7] transition-colors">
-                <input type="checkbox" checked={visibility[s.key]} onChange={() => toggle(s.key)} className="accent-[#f5f5f7]" />
+              <label key={s.key} className="flex items-center gap-3 cursor-pointer text-[13px] text-[#6e6e73] hover:text-[#f5f5f7] transition-colors py-1">
+                <input type="checkbox" checked={visibility[s.key]} onChange={() => toggle(s.key)} className="accent-[#f5f5f7] w-4 h-4" />
                 {s.label}
               </label>
             ))}
