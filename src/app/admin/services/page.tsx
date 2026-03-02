@@ -4,9 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Trash2 } from "lucide-react";
 import { getServices, setServices, type Service } from "@/lib/content-manager";
-import { cn } from "@/lib/utils";
-
-const ICONS = ["💼", "🖥️", "📱", "🎨", "⚙️", "🚀", "🔧", "📊"];
 
 export default function AdminServicesPage() {
   const [services, setServicesState] = useState<Service[]>([]);
@@ -17,7 +14,7 @@ export default function AdminServicesPage() {
   }, []);
 
   const add = () => {
-    setServicesState((s) => [...s, { id: crypto.randomUUID(), icon: "💼", title: "", description: "" }]);
+    setServicesState((s) => [...s, { id: crypto.randomUUID(), icon: "", title: "", description: "" }]);
   };
 
   const remove = (id: string) => {
@@ -52,11 +49,6 @@ export default function AdminServicesPage() {
       <div className="space-y-4">
         {services.map((s) => (
           <div key={s.id} className="glass rounded-2xl border border-[rgba(255,255,255,0.04)] p-5 flex gap-4 items-start">
-            <div className="flex gap-1 flex-wrap">
-              {ICONS.map((i) => (
-                <button key={i} type="button" onClick={() => update(s.id, { icon: i })} className={cn("text-xl p-1.5 rounded-lg transition-colors", s.icon === i ? "bg-[rgba(255,255,255,0.08)]" : "hover:bg-[rgba(255,255,255,0.04)]")}>{i}</button>
-              ))}
-            </div>
             <div className="flex-1 grid gap-3">
               <input placeholder="Başlık" value={s.title} onChange={(e) => update(s.id, { title: e.target.value })} className="w-full bg-[#1d1d1f] border border-[rgba(255,255,255,0.08)] text-[#f5f5f7] placeholder:text-[#48484a] rounded-xl px-4 py-3 text-sm outline-none focus:border-[rgba(255,255,255,0.15)] transition-colors" />
               <textarea placeholder="Açıklama" value={s.description} onChange={(e) => update(s.id, { description: e.target.value })} rows={2} className="w-full bg-[#1d1d1f] border border-[rgba(255,255,255,0.08)] text-[#f5f5f7] placeholder:text-[#48484a] rounded-xl px-4 py-3 text-sm outline-none focus:border-[rgba(255,255,255,0.15)] transition-colors resize-none" />

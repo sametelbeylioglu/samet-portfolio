@@ -319,7 +319,6 @@ export default function HomePage() {
               {services.map((s, i) => (
                 <R key={s.id} d={i < 4 ? `d${(i % 2) + 1}` as "d1" | "d2" : undefined}>
                   <div className="spotlight-card p-8 md:p-10 h-full">
-                    <span className="text-3xl block mb-6">{s.icon}</span>
                     <h3 className="text-[#f5f5f7] font-semibold text-[17px] mb-3 tracking-[-0.01em]">{s.title}</h3>
                     <p className="text-[#6e6e73] text-[14px] leading-[1.7]">{s.description}</p>
                   </div>
