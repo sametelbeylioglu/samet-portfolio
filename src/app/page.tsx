@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Award, Mail } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
@@ -283,7 +283,7 @@ export default function HomePage() {
               { num: "02", title: "Tasarım", desc: "Marka kimliği, UI/UX ve kullanıcı odaklı arayüz tasarımı yapıyorum." },
               { num: "03", title: "Strateji", desc: "İş hedeflerini anlayarak teknolojiyi doğru yönde kullanıyorum." },
             ]).length > 0 && (
-              <div className={`grid md:grid-cols-${Math.min((about?.cards ?? []).length || 3, 3)} gap-px mt-24 bg-[rgba(255,255,255,0.04)] rounded-2xl overflow-hidden`}>
+              <div className="grid md:grid-cols-3 gap-px mt-24 bg-[rgba(255,255,255,0.04)] rounded-2xl overflow-hidden">
                 {(about?.cards ?? [
                   { num: "01", title: "Yazılım", desc: "Modern web teknolojileri ile ölçeklenebilir uygulamalar geliştiriyorum." },
                   { num: "02", title: "Tasarım", desc: "Marka kimliği, UI/UX ve kullanıcı odaklı arayüz tasarımı yapıyorum." },

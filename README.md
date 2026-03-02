@@ -50,7 +50,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-key
 
 ## Admin Paneli
 
-`/admin` adresinden tüm içeriği yönetebilirsiniz:
+Yönetim panelinden tüm içeriği düzenleyebilirsiniz:
 - Profil & Hero
 - Hizmetler, Projeler, Yetkinlikler, Sertifikalar
 - Eğitim, Deneyim
