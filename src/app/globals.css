@@ -390,7 +390,7 @@ body {
    ═══════════════════════════════════════ */
 @media (max-width: 768px) {
   .mobile-snap-container {
-    scroll-snap-type: y mandatory;
+    scroll-snap-type: y proximity;
   }
 
   .snap-section {
@@ -399,25 +399,12 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    opacity: 0;
-    transform: translateY(40px) scale(0.97);
-    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-                transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 0.5s ease, transform 0.5s ease;
   }
 
-  .snap-section.in-view {
-    opacity: 1;
-    transform: none;
-  }
-
-  .snap-section.below-view {
+  .snap-section.out-view {
     opacity: 0;
-    transform: translateY(40px) scale(0.97);
-  }
-
-  .snap-section.above-view {
-    opacity: 0;
-    transform: translateY(-30px) scale(0.97);
+    transform: scale(0.96);
   }
 
   .snap-hero {

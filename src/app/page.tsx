@@ -28,42 +28,40 @@ function useReveal(threshold = 0.1) {
   return ref;
 }
 
-function useMobileSnap() {
+function useMobileSnap(loaded: boolean) {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    if (!isMobile) return;
+    if (!loaded) return;
+    const mq = window.matchMedia("(max-width: 768px)");
+    if (!mq.matches) return;
     const container = containerRef.current;
     if (!container) return;
-    const sections = container.querySelectorAll(".snap-section");
-    if (sections.length === 0) return;
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const el = entry.target as HTMLElement;
-          if (entry.isIntersecting) {
-            el.classList.add("in-view");
-            el.classList.remove("above-view", "below-view");
-          } else {
-            el.classList.remove("in-view");
-            const rect = entry.boundingClientRect;
-            if (rect.top < 0) {
-              el.classList.add("above-view");
-              el.classList.remove("below-view");
+    const observe = () => {
+      const sections = container.querySelectorAll(".snap-section");
+      if (sections.length === 0) return undefined;
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const el = entry.target as HTMLElement;
+            if (entry.isIntersecting) {
+              el.classList.remove("out-view");
             } else {
-              el.classList.add("below-view");
-              el.classList.remove("above-view");
+              el.classList.add("out-view");
             }
-          }
-        });
-      },
-      { threshold: 0.25 }
-    );
+          });
+        },
+        { threshold: 0.15 }
+      );
 
-    sections.forEach((s) => io.observe(s));
-    return () => io.disconnect();
-  }, []);
+      sections.forEach((s) => io.observe(s));
+      return io;
+    };
+
+    const io = observe();
+    return () => io?.disconnect();
+  }, [loaded]);
   return containerRef;
 }
 
@@ -166,9 +164,8 @@ export default function HomePage() {
   const [vis, setVis] = useState<SectionVisibility | null>(null);
 
   useSpotlightCards();
-  const snapRef = useMobileSnap();
-
   const [loaded, setLoaded] = useState(false);
+  const snapRef = useMobileSnap(loaded);
 
   useEffect(() => {
     Promise.all([
