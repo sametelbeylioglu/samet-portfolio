@@ -9,9 +9,14 @@ async function getStorageItem<T>(key: string): Promise<T | null> {
   try {
     const supabase = getSupabase();
     if (supabase) {
-      const res = await supabase.from("site_data").select("value").eq("key", key).single();
-      const row = res.data as { value: T } | null;
-      if (row?.value) return row.value;
+      const { data, error } = await supabase
+        .from("site_data")
+        .select("value")
+        .eq("key", key)
+        .single();
+      if (!error && data && data.value !== null && data.value !== undefined) {
+        return data.value as T;
+      }
     }
   } catch (_) {}
   const local = localStorage.getItem(STORAGE_PREFIX + key);
@@ -23,10 +28,14 @@ async function setStorageItem<T>(key: string, value: T): Promise<void> {
   try {
     const supabase = getSupabase();
     if (supabase) {
-      const table = supabase.from("site_data") as unknown as { upsert: (row: { key: string; value: unknown; updated_at: string }) => Promise<unknown> };
-      await table.upsert({ key, value, updated_at: new Date().toISOString() });
+      const { error } = await supabase
+        .from("site_data")
+        .upsert({ key, value, updated_at: new Date().toISOString() });
+      if (error) console.error("Supabase write error:", error.message);
     }
-  } catch (_) {}
+  } catch (e) {
+    console.error("Supabase write exception:", e);
+  }
   try {
     localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
   } catch (e) {

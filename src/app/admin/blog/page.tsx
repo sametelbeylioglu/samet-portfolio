@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Plus, Trash2, Eye, ExternalLink } from "lucide-react";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { getBlogPosts, setBlogPosts, type BlogPost } from "@/lib/content-manager";
-import { compressImage } from "@/lib/image-utils";
+import { uploadImage } from "@/lib/image-utils";
 
 export default function AdminBlogPage() {
   const [posts, setPostsState] = useState<BlogPost[]>([]);
@@ -60,7 +60,7 @@ export default function AdminBlogPage() {
     if (!file) return;
     setError("");
     try {
-      const dataUrl = await compressImage(file, { maxWidth: 1200, maxHeight: 800, quality: 0.75 });
+      const dataUrl = await uploadImage(file, "blog", { maxWidth: 1200, maxHeight: 800, quality: 0.75 });
       update(id, { image: dataUrl });
     } catch {
       setError("Görsel sıkıştırılamadı.");

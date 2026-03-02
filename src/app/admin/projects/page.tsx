@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Trash2, Star, ImagePlus } from "lucide-react";
 import { getProjects, setProjects, type Project } from "@/lib/content-manager";
-import { compressImage } from "@/lib/image-utils";
+import { uploadImage } from "@/lib/image-utils";
 
 export default function AdminProjectsPage() {
   const [projects, setProjectsState] = useState<Project[]>([]);
@@ -59,7 +59,7 @@ export default function AdminProjectsPage() {
     try {
       const newImages: string[] = [];
       for (const file of Array.from(files)) {
-        const dataUrl = await compressImage(file, { maxWidth: 1200, maxHeight: 800, quality: 0.75 });
+        const dataUrl = await uploadImage(file, "projects", { maxWidth: 1200, maxHeight: 800, quality: 0.75 });
         newImages.push(dataUrl);
       }
       const project = projects.find((p) => p.id === id);

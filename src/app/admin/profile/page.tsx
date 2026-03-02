@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getProfile, getHero, setProfile, setHero, type Profile, type HeroContent } from "@/lib/content-manager";
-import { compressImage } from "@/lib/image-utils";
+import { uploadImage } from "@/lib/image-utils";
 
 export default function AdminProfilePage() {
   const [profile, setProfileState] = useState<Profile>({ name: "", title: "", bio: "" });
@@ -43,7 +43,7 @@ export default function AdminProfilePage() {
     if (!file) return;
     setError("");
     try {
-      const dataUrl = await compressImage(file, { maxWidth: 400, maxHeight: 400, quality: 0.75 });
+      const dataUrl = await uploadImage(file, "profile", { maxWidth: 400, maxHeight: 400, quality: 0.75 });
       setProfileState((p) => ({ ...p, image: dataUrl }));
     } catch {
       setError("Görsel sıkıştırılamadı. Farklı bir dosya deneyin.");
