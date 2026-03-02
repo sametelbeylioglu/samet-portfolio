@@ -28,12 +28,18 @@ function useReveal(threshold = 0.1) {
   return ref;
 }
 
-function useWordStagger() {
+function WordStagger({ text, className }: { text: string; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (!text) return;
+    setReady(true);
+  }, [text]);
+
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
-    const text = el.textContent || "";
+    if (!el || !ready) return;
     const words = text.split(" ");
     el.innerHTML = "";
     words.forEach((word, i) => {
@@ -51,8 +57,9 @@ function useWordStagger() {
     }, { threshold: 0.3 });
     io.observe(el);
     return () => io.disconnect();
-  }, []);
-  return ref;
+  }, [text, ready]);
+
+  return <div ref={ref} className={`word-stagger ${className ?? ""}`}>{text}</div>;
 }
 
 function useSpotlightCards() {
@@ -131,6 +138,8 @@ export default function HomePage() {
 
   useSpotlightCards();
 
+  const [loaded, setLoaded] = useState(false);
+
   useEffect(() => {
     Promise.all([
       getHero(), getProfile(), getServices(), getProjects(), getSkills(),
@@ -140,13 +149,22 @@ export default function HomePage() {
       setServices(srv); setProjects(prj); setSkills(sk);
       setExperience(exp); setEducation(edu); setCertificates(cert);
       setContact(cnt); setVis(v ?? ({} as SectionVisibility));
+      setLoaded(true);
     });
   }, []);
 
   const h = hero ?? D_HERO;
   const pr = profile ?? D_PROFILE;
   const show = (k: keyof SectionVisibility) => vis?.[k] !== false;
-  const heroTextRef = useWordStagger();
+
+  if (!loaded) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="grain" />
+        <div className="loading-bar" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black">
@@ -171,9 +189,12 @@ export default function HomePage() {
               </div>
             </R>
 
-            <div ref={heroTextRef} className="word-stagger text-[clamp(48px,10vw,110px)] font-extrabold tracking-[-0.05em] leading-[0.9] mb-8 text-[#f5f5f7]">
-              {h.headline}
-            </div>
+            {loaded && (
+              <WordStagger
+                text={h.headline}
+                className="text-[clamp(48px,10vw,110px)] font-extrabold tracking-[-0.05em] leading-[0.9] mb-8 text-[#f5f5f7]"
+              />
+            )}
 
             <R d="d3">
               <p className="text-[clamp(16px,2vw,20px)] text-[#6e6e73] max-w-[480px] mx-auto leading-[1.6] mb-6">
@@ -232,12 +253,14 @@ export default function HomePage() {
         <section id="hakkımda" className="py-40 md:py-56 px-6">
           <div className="max-w-[1000px] mx-auto">
             <R><span className="label">Hakkımda</span></R>
+            {pr.title && (
+              <R cls="mt-6">
+                <p className="text-[15px] text-[#5856d6] font-mono tracking-[-0.01em]">{pr.title}</p>
+              </R>
+            )}
             <RS cls="mt-10">
               <h2 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-[-0.035em] leading-[1.15] text-[#f5f5f7]">
-                Yazılım mühendisliği ve görsel tasarımı bir araya getiriyorum.{" "}
-                <span className="text-[#48484a]">
-                  Fikri koda, kodu deneyime dönüştürüyorum. Her piksel ve her satır bilinçli bir kararın ürünü.
-                </span>
+                {pr.bio || "Yazılım mühendisliği ve görsel tasarımı bir araya getiriyorum."}{" "}
               </h2>
             </RS>
 
