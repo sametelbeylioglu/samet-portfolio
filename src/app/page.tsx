@@ -106,21 +106,10 @@ function Marquee({ items }: { items: string[] }) {
   );
 }
 
-/* ════════════ DEFAULTS ════════════ */
+/* ════════════ DEFAULTS (sadece CTA butonları) ════════════ */
 
-const D_HERO: HeroContent = {
-  greeting: "",
-  headline: "Samet Elbeylioğlu",
-  subheadline: "Dijital deneyimler tasarlıyor ve geliştiriyorum.",
-  ctaText: "Çalışmalarımı İncele",
-  ctaLink: "/#projeler",
-};
-
-const D_PROFILE: Profile = {
-  name: "Samet Elbeylioğlu",
-  title: "Yazılım Geliştirici & Grafik Tasarımcı",
-  bio: "Kod ve tasarımın kesişiminde çalışıyorum. Piksel hassasiyetinde arayüzler ve temiz, sürdürülebilir kod yazıyorum. Her projeye mükemmeliyetçi bir yaklaşımla yaklaşıyorum.",
-};
+const D_CTA_TEXT = "Çalışmalarımı İncele";
+const D_CTA_LINK = "/#projeler";
 
 /* ════════════ PAGE ════════════ */
 
@@ -154,9 +143,9 @@ export default function HomePage() {
   }, []);
 
   const pr: Profile = {
-    name: profile?.name || D_PROFILE.name,
-    title: profile?.title || D_PROFILE.title,
-    bio: profile?.bio || D_PROFILE.bio,
+    name: profile?.name ?? "",
+    title: profile?.title ?? "",
+    bio: profile?.bio ?? "",
     image: profile?.image,
     resumeUrl: profile?.resumeUrl,
   };
@@ -164,8 +153,8 @@ export default function HomePage() {
     greeting: hero?.greeting ?? "",
     headline: pr.name,
     subheadline: pr.bio,
-    ctaText: hero?.ctaText || D_HERO.ctaText,
-    ctaLink: hero?.ctaLink || D_HERO.ctaLink,
+    ctaText: hero?.ctaText || D_CTA_TEXT,
+    ctaLink: hero?.ctaLink || D_CTA_LINK,
     image: hero?.image,
   };
   const show = (k: keyof SectionVisibility) => vis?.[k] !== false;
@@ -259,18 +248,12 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════
           MARQUEE - Yetenekler
           ══════════════════════════════════════════════ */}
-      {show("skills") && (
-        <div className="sep" />
-      )}
-      {show("skills") && (
-        <Marquee
-          items={skills.length > 0
-            ? skills.map(s => s.name)
-            : ["React", "Next.js", "TypeScript", "Node.js", "Figma", "Photoshop", "Illustrator", "Tailwind CSS", "PostgreSQL", "Supabase", "UI/UX Design", "Web Design", "Branding"]}
-        />
-      )}
-      {show("skills") && (
-        <div className="sep" />
+      {show("skills") && skills.length > 0 && (
+        <>
+          <div className="sep" />
+          <Marquee items={skills.map(s => s.name)} />
+          <div className="sep" />
+        </>
       )}
 
       {/* ══════════════════════════════════════════════
@@ -337,7 +320,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════
           PROJECTS - Full-width case studies
           ══════════════════════════════════════════════ */}
-      {show("projects") && (
+      {show("projects") && projects.length > 0 && (
         <section id="projeler" className="py-40 px-6">
           <div className="max-w-[1000px] mx-auto">
             <R><span className="label">Seçili Çalışmalar</span></R>
@@ -355,9 +338,7 @@ export default function HomePage() {
             </R>
 
             <div className="space-y-4">
-              {(projects.length > 0 ? projects.slice(0, 4) : [
-                { id: "ph1", title: "Proje Adı", description: "Admin panelinden projelerinizi ekleyerek portfolyonuzu oluşturun.", tags: ["Next.js", "React"], order: 0, createdAt: "", year: "2026" },
-              ]).map((p, i) => (
+              {projects.slice(0, 4).map((p, i) => (
                 <RS key={p.id}>
                   <div className="spotlight-card group">
                     {p.image && (
@@ -401,7 +382,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════
           EXPERIENCE
           ══════════════════════════════════════════════ */}
-      {show("experience") && (
+      {show("experience") && experience.length > 0 && (
         <section id="deneyim" className="py-40 px-6">
           <div className="max-w-[1000px] mx-auto">
             <R><span className="label">Deneyim</span></R>
@@ -411,7 +392,7 @@ export default function HomePage() {
               </h2>
             </R>
 
-            {experience.length > 0 ? experience.map((e) => (
+            {experience.map((e) => (
               <R key={e.id}>
                 <div className="group flex gap-8 md:gap-12 py-10 border-b border-[rgba(255,255,255,0.03)] last:border-0">
                   <div className="hidden md:flex flex-col items-center pt-2.5 shrink-0">
@@ -428,9 +409,7 @@ export default function HomePage() {
                   </div>
                 </div>
               </R>
-            )) : (
-              <R><p className="text-[#3a3a3c] text-sm">Henüz deneyim eklenmedi.</p></R>
-            )}
+            ))}
           </div>
         </section>
       )}
@@ -438,7 +417,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════
           EDUCATION
           ══════════════════════════════════════════════ */}
-      {show("education") && (
+      {show("education") && education.length > 0 && (
         <section id="eğitim" className="py-40 px-6">
           <div className="max-w-[1000px] mx-auto">
             <R><span className="label">Eğitim</span></R>
@@ -448,7 +427,7 @@ export default function HomePage() {
               </h2>
             </R>
 
-            {education.length > 0 ? education.map((e) => (
+            {education.map((e) => (
               <R key={e.id}>
                 <div className="flex gap-8 md:gap-12 py-10 border-b border-[rgba(255,255,255,0.03)] last:border-0">
                   <div className="flex-1">
@@ -462,9 +441,7 @@ export default function HomePage() {
                   </div>
                 </div>
               </R>
-            )) : (
-              <R><p className="text-[#3a3a3c] text-sm">Henüz eğitim eklenmedi.</p></R>
-            )}
+            ))}
           </div>
         </section>
       )}
