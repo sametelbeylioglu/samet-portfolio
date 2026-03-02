@@ -153,20 +153,20 @@ export default function HomePage() {
     });
   }, []);
 
-  const h: HeroContent = {
-    greeting: hero?.greeting || D_HERO.greeting,
-    headline: hero?.headline || D_HERO.headline,
-    subheadline: hero?.subheadline || D_HERO.subheadline,
-    ctaText: hero?.ctaText || D_HERO.ctaText,
-    ctaLink: hero?.ctaLink || D_HERO.ctaLink,
-    image: hero?.image,
-  };
   const pr: Profile = {
     name: profile?.name || D_PROFILE.name,
     title: profile?.title || D_PROFILE.title,
     bio: profile?.bio || D_PROFILE.bio,
     image: profile?.image,
     resumeUrl: profile?.resumeUrl,
+  };
+  const h: HeroContent = {
+    greeting: hero?.greeting ?? "",
+    headline: pr.name,
+    subheadline: pr.bio,
+    ctaText: hero?.ctaText || D_HERO.ctaText,
+    ctaLink: hero?.ctaLink || D_HERO.ctaLink,
+    image: hero?.image,
   };
   const show = (k: keyof SectionVisibility) => vis?.[k] !== false;
 
@@ -203,7 +203,7 @@ export default function HomePage() {
             </R>
 
             {pr.image && (
-              <R d="d2">
+              <R d="d1">
                 <div className="mb-8">
                   <img src={pr.image} alt={pr.name} className="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover mx-auto border-2 border-[rgba(255,255,255,0.06)]" />
                 </div>
@@ -218,22 +218,24 @@ export default function HomePage() {
 
             {loaded && (
               <WordStagger
-                text={pr.name || h.headline}
+                text={pr.name}
                 className="text-[clamp(48px,10vw,110px)] font-extrabold tracking-[-0.05em] leading-[0.9] mb-6 text-[#f5f5f7]"
               />
             )}
 
             {pr.title && (
               <R d="d3">
-                <p className="text-[clamp(14px,1.8vw,20px)] text-[#5856d6] font-medium mb-6 tracking-[-0.01em]">{pr.title}</p>
+                <p className="text-[clamp(14px,1.8vw,20px)] text-[#5856d6] font-medium mb-4 tracking-[-0.01em]">{pr.title}</p>
               </R>
             )}
 
-            <R d="d3">
-              <p className="text-[clamp(16px,2vw,20px)] text-[#6e6e73] max-w-[480px] mx-auto leading-[1.6] mb-8">
-                {h.subheadline}
-              </p>
-            </R>
+            {pr.bio && (
+              <R d="d3">
+                <p className="text-[clamp(16px,2vw,20px)] text-[#6e6e73] max-w-[480px] mx-auto leading-[1.6] mb-8">
+                  {pr.bio}
+                </p>
+              </R>
+            )}
 
             <R d="d5">
               <div className="flex flex-wrap gap-3 justify-center">
@@ -280,7 +282,10 @@ export default function HomePage() {
             <R><span className="label">Hakkımda</span></R>
             <RS cls="mt-10">
               <h2 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-[-0.035em] leading-[1.15] text-[#f5f5f7]">
-                {pr.bio}{" "}
+                Yazılım mühendisliği ve görsel tasarımı bir araya getiriyorum.{" "}
+                <span className="text-[#48484a]">
+                  Fikri koda, kodu deneyime dönüştürüyorum. Her piksel ve her satır bilinçli bir kararın ürünü.
+                </span>
               </h2>
             </RS>
 
