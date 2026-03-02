@@ -153,8 +153,21 @@ export default function HomePage() {
     });
   }, []);
 
-  const h = hero ?? D_HERO;
-  const pr = profile ?? D_PROFILE;
+  const h: HeroContent = {
+    greeting: hero?.greeting || D_HERO.greeting,
+    headline: hero?.headline || D_HERO.headline,
+    subheadline: hero?.subheadline || D_HERO.subheadline,
+    ctaText: hero?.ctaText || D_HERO.ctaText,
+    ctaLink: hero?.ctaLink || D_HERO.ctaLink,
+    image: hero?.image,
+  };
+  const pr: Profile = {
+    name: profile?.name || D_PROFILE.name,
+    title: profile?.title || D_PROFILE.title,
+    bio: profile?.bio || D_PROFILE.bio,
+    image: profile?.image,
+    resumeUrl: profile?.resumeUrl,
+  };
   const show = (k: keyof SectionVisibility) => vis?.[k] !== false;
 
   if (!loaded) {
