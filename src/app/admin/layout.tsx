@@ -5,13 +5,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   User, Briefcase, FolderKanban, Code2, GraduationCap, Award,
-  Settings, FileText, Newspaper, Phone, LayoutDashboard, Eye, LogOut, Menu, X
+  Settings, FileText, Newspaper, Phone, LayoutDashboard, Eye, LogOut, Menu, X, Info
 } from "lucide-react";
 import { isAuthenticated, logout, getUsername } from "@/lib/auth";
 
 const navItems = [
   { href: "/admin", icon: LayoutDashboard, label: "Panel" },
   { href: "/admin/profile", icon: User, label: "Profil" },
+  { href: "/admin/about", icon: Info, label: "Hakkımda" },
   { href: "/admin/services", icon: Briefcase, label: "Hizmetler" },
   { href: "/admin/projects", icon: FolderKanban, label: "Projeler" },
   { href: "/admin/skills", icon: Code2, label: "Yetenekler" },

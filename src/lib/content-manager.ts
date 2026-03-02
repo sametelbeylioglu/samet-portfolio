@@ -146,6 +146,12 @@ export interface NewsItem {
   image?: string;
 }
 
+export interface AboutContent {
+  headline: string;
+  headlineFaded: string;
+  cards: { num: string; title: string; desc: string }[];
+}
+
 export interface ContactInfo {
   email: string;
   phone?: string;
@@ -196,6 +202,7 @@ const KEYS = {
   EXPERIENCE: "experience",
   BLOG_POSTS: "blog_posts",
   NEWS: "news",
+  ABOUT: "about",
   CONTACT: "contact",
   SECTION_VISIBILITY: "section_visibility",
   SITE_TITLE: "site_title",
@@ -217,6 +224,14 @@ export async function getHero(): Promise<HeroContent | null> {
 
 export async function setHero(data: HeroContent): Promise<void> {
   await setStorageItem(KEYS.HERO, data);
+}
+
+export async function getAbout(): Promise<AboutContent | null> {
+  return getStorageItem<AboutContent>(KEYS.ABOUT);
+}
+
+export async function setAbout(data: AboutContent): Promise<void> {
+  await setStorageItem(KEYS.ABOUT, data);
 }
 
 export async function getServices(): Promise<Service[]> {

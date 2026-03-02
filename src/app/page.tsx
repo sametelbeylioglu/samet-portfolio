@@ -6,9 +6,9 @@ import { ArrowRight, ArrowUpRight, Award, Mail } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import {
-  getHero, getProfile, getServices, getProjects, getSkills,
+  getHero, getProfile, getAbout, getServices, getProjects, getSkills,
   getExperience, getEducation, getCertificates, getContactInfo, getSectionVisibility,
-  type HeroContent, type Profile, type Service, type Project, type Skill,
+  type HeroContent, type Profile, type AboutContent, type Service, type Project, type Skill,
   type Experience, type Education, type Certificate, type ContactInfo, type SectionVisibility,
 } from "@/lib/content-manager";
 
@@ -116,6 +116,7 @@ const D_CTA_LINK = "/#projeler";
 export default function HomePage() {
   const [hero, setHero] = useState<HeroContent | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [about, setAboutState] = useState<AboutContent | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
@@ -131,10 +132,10 @@ export default function HomePage() {
 
   useEffect(() => {
     Promise.all([
-      getHero(), getProfile(), getServices(), getProjects(), getSkills(),
+      getHero(), getProfile(), getAbout(), getServices(), getProjects(), getSkills(),
       getExperience(), getEducation(), getCertificates(), getContactInfo(), getSectionVisibility(),
-    ]).then(([h, p, srv, prj, sk, exp, edu, cert, cnt, v]) => {
-      setHero(h); setProfile(p);
+    ]).then(([h, p, ab, srv, prj, sk, exp, edu, cert, cnt, v]) => {
+      setHero(h); setProfile(p); setAboutState(ab);
       setServices(srv); setProjects(prj); setSkills(sk);
       setExperience(exp); setEducation(edu); setCertificates(cert);
       setContact(cnt); setVis(v ?? ({} as SectionVisibility));
@@ -268,28 +269,36 @@ export default function HomePage() {
             <R><span className="label">Hakkımda</span></R>
             <RS cls="mt-10">
               <h2 className="text-[clamp(28px,4.5vw,56px)] font-bold tracking-[-0.035em] leading-[1.15] text-[#f5f5f7]">
-                Yazılım mühendisliği ve görsel tasarımı bir araya getiriyorum.{" "}
-                <span className="text-[#48484a]">
-                  Fikri koda, kodu deneyime dönüştürüyorum. Her piksel ve her satır bilinçli bir kararın ürünü.
-                </span>
+                {about?.headline || "Yazılım mühendisliği ve görsel tasarımı bir araya getiriyorum."}{" "}
+                {(about?.headlineFaded || "Fikri koda, kodu deneyime dönüştürüyorum. Her piksel ve her satır bilinçli bir kararın ürünü.") && (
+                  <span className="text-[#48484a]">
+                    {about?.headlineFaded || "Fikri koda, kodu deneyime dönüştürüyorum. Her piksel ve her satır bilinçli bir kararın ürünü."}
+                  </span>
+                )}
               </h2>
             </RS>
 
-            <div className="grid md:grid-cols-3 gap-px mt-24 bg-[rgba(255,255,255,0.04)] rounded-2xl overflow-hidden">
-              {[
-                { num: "01", title: "Yazılım", desc: "Modern web teknolojileri ile ölçeklenebilir uygulamalar geliştiriyorum." },
-                { num: "02", title: "Tasarım", desc: "Marka kimliği, UI/UX ve kullanıcı odaklı arayüz tasarımı yapıyorum." },
-                { num: "03", title: "Strateji", desc: "İş hedeflerini anlayarak teknolojiyi doğru yönde kullanıyorum." },
-              ].map((item, i) => (
-                <R key={item.num} d={`d${i + 1}` as "d1" | "d2" | "d3"}>
-                  <div className="bg-[#0a0a0a] p-8 md:p-10 h-full">
-                    <span className="text-[11px] text-[#3a3a3c] font-mono">{item.num}</span>
-                    <h3 className="text-[#f5f5f7] text-lg font-semibold mt-4 mb-3 tracking-[-0.02em]">{item.title}</h3>
-                    <p className="text-[#6e6e73] text-[14px] leading-[1.7]">{item.desc}</p>
-                  </div>
-                </R>
-              ))}
-            </div>
+            {(about?.cards ?? [
+              { num: "01", title: "Yazılım", desc: "Modern web teknolojileri ile ölçeklenebilir uygulamalar geliştiriyorum." },
+              { num: "02", title: "Tasarım", desc: "Marka kimliği, UI/UX ve kullanıcı odaklı arayüz tasarımı yapıyorum." },
+              { num: "03", title: "Strateji", desc: "İş hedeflerini anlayarak teknolojiyi doğru yönde kullanıyorum." },
+            ]).length > 0 && (
+              <div className={`grid md:grid-cols-${Math.min((about?.cards ?? []).length || 3, 3)} gap-px mt-24 bg-[rgba(255,255,255,0.04)] rounded-2xl overflow-hidden`}>
+                {(about?.cards ?? [
+                  { num: "01", title: "Yazılım", desc: "Modern web teknolojileri ile ölçeklenebilir uygulamalar geliştiriyorum." },
+                  { num: "02", title: "Tasarım", desc: "Marka kimliği, UI/UX ve kullanıcı odaklı arayüz tasarımı yapıyorum." },
+                  { num: "03", title: "Strateji", desc: "İş hedeflerini anlayarak teknolojiyi doğru yönde kullanıyorum." },
+                ]).map((item, i) => (
+                  <R key={item.num} d={i < 3 ? `d${i + 1}` as "d1" | "d2" | "d3" : undefined}>
+                    <div className="bg-[#0a0a0a] p-8 md:p-10 h-full">
+                      <span className="text-[11px] text-[#3a3a3c] font-mono">{item.num}</span>
+                      <h3 className="text-[#f5f5f7] text-lg font-semibold mt-4 mb-3 tracking-[-0.02em]">{item.title}</h3>
+                      <p className="text-[#6e6e73] text-[14px] leading-[1.7]">{item.desc}</p>
+                    </div>
+                  </R>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -340,37 +349,37 @@ export default function HomePage() {
               </div>
             </R>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {projects.slice(0, 4).map((p, i) => (
-                <RS key={p.id}>
+                <R key={p.id} d={i < 4 ? `d${(i % 2) + 1}` as "d1" | "d2" : undefined}>
                   <Link href={`/projeler?id=${p.id}`} className="block">
-                    <div className="spotlight-card group">
+                    <div className="spotlight-card group flex flex-col md:flex-row md:items-stretch overflow-hidden">
                       {p.image && (
-                        <div className="img-zoom">
-                          <img src={p.image} alt={p.title} className="w-full aspect-[2.2/1] object-cover" style={{ borderRadius: "16px 16px 0 0" }} />
+                        <div className="md:w-56 shrink-0 overflow-hidden">
+                          <img src={p.image} alt={p.title} className="w-full h-full object-cover md:aspect-auto aspect-[2.5/1] group-hover:scale-105 transition-transform duration-500" style={{ minHeight: "100%" }} />
                         </div>
                       )}
-                      <div className="p-8 md:p-10 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-3">
-                            {p.year && <span className="font-mono text-[11px] text-[#3a3a3c]">{p.year}</span>}
-                            {p.category && <span className="tag">{p.category}</span>}
+                      <div className="flex-1 p-6 md:p-7 flex items-center justify-between gap-4">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2.5 mb-2">
+                            {p.year && <span className="font-mono text-[10px] text-[#3a3a3c]">{p.year}</span>}
+                            {p.category && <span className="tag text-[10px]">{p.category}</span>}
                           </div>
-                          <h3 className="text-[#f5f5f7] text-2xl md:text-[28px] font-bold tracking-[-0.03em] mb-3">{p.title}</h3>
-                          <p className="text-[#6e6e73] text-[15px] leading-[1.6] max-w-xl">{p.description}</p>
+                          <h3 className="text-[#f5f5f7] text-lg font-bold tracking-[-0.02em] mb-1.5">{p.title}</h3>
+                          <p className="text-[#6e6e73] text-[13px] leading-[1.5] line-clamp-2">{p.description}</p>
                           {p.tags && p.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-5">
-                              {p.tags.slice(0, 5).map((t) => <span key={t} className="tag">{t}</span>)}
+                            <div className="flex flex-wrap gap-1.5 mt-3">
+                              {p.tags.slice(0, 3).map((t) => <span key={t} className="tag text-[10px]">{t}</span>)}
                             </div>
                           )}
                         </div>
-                        <div className="w-10 h-10 rounded-full border border-[rgba(255,255,255,0.06)] flex items-center justify-center text-[#3a3a3c] group-hover:text-[#f5f5f7] group-hover:border-[rgba(255,255,255,0.15)] transition-all shrink-0">
-                          <ArrowUpRight className="w-4 h-4" />
+                        <div className="w-9 h-9 rounded-full border border-[rgba(255,255,255,0.06)] flex items-center justify-center text-[#3a3a3c] group-hover:text-[#f5f5f7] group-hover:border-[rgba(255,255,255,0.15)] transition-all shrink-0">
+                          <ArrowUpRight className="w-3.5 h-3.5" />
                         </div>
                       </div>
                     </div>
                   </Link>
-                </RS>
+                </R>
               ))}
             </div>
           </div>
