@@ -24,7 +24,7 @@ export default function LoginPage() {
     setLoading(false);
 
     if (ok) {
-      router.push("/admin");
+      router.push("/nuliyuyu");
     } else {
       setError("Kullanıcı adı veya şifre yanlış.");
     }

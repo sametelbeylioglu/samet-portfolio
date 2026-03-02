@@ -16,17 +16,17 @@ const ALL_KEYS = [
 ];
 
 const cards = [
-  { href: "/admin/profile", icon: User, label: "Profil", desc: "Kişisel bilgiler ve hakkında" },
-  { href: "/admin/services", icon: Briefcase, label: "Hizmetler", desc: "Sunduğunuz hizmetler" },
-  { href: "/admin/projects", icon: FolderKanban, label: "Projeler", desc: "Portfolyo çalışmaları" },
-  { href: "/admin/skills", icon: Code2, label: "Yetenekler", desc: "Teknik beceriler" },
-  { href: "/admin/experience", icon: Briefcase, label: "Deneyim", desc: "İş geçmişi" },
-  { href: "/admin/education", icon: GraduationCap, label: "Eğitim", desc: "Akademik geçmiş" },
-  { href: "/admin/certificates", icon: Award, label: "Sertifikalar", desc: "Kazanılan belgeler" },
-  { href: "/admin/blog", icon: FileText, label: "Blog", desc: "Yazılar ve içerikler" },
-  { href: "/admin/news", icon: Newspaper, label: "Haberler", desc: "Güncel haberler" },
-  { href: "/admin/contact", icon: Phone, label: "İletişim", desc: "İletişim bilgileri" },
-  { href: "/admin/settings", icon: Settings, label: "Ayarlar", desc: "Site yapılandırması" },
+  { href: "/nuliyuyu/profile", icon: User, label: "Profil", desc: "Kişisel bilgiler ve hakkında" },
+  { href: "/nuliyuyu/services", icon: Briefcase, label: "Hizmetler", desc: "Sunduğunuz hizmetler" },
+  { href: "/nuliyuyu/projects", icon: FolderKanban, label: "Projeler", desc: "Portfolyo çalışmaları" },
+  { href: "/nuliyuyu/skills", icon: Code2, label: "Yetenekler", desc: "Teknik beceriler" },
+  { href: "/nuliyuyu/experience", icon: Briefcase, label: "Deneyim", desc: "İş geçmişi" },
+  { href: "/nuliyuyu/education", icon: GraduationCap, label: "Eğitim", desc: "Akademik geçmiş" },
+  { href: "/nuliyuyu/certificates", icon: Award, label: "Sertifikalar", desc: "Kazanılan belgeler" },
+  { href: "/nuliyuyu/blog", icon: FileText, label: "Blog", desc: "Yazılar ve içerikler" },
+  { href: "/nuliyuyu/news", icon: Newspaper, label: "Haberler", desc: "Güncel haberler" },
+  { href: "/nuliyuyu/contact", icon: Phone, label: "İletişim", desc: "İletişim bilgileri" },
+  { href: "/nuliyuyu/settings", icon: Settings, label: "Ayarlar", desc: "Site yapılandırması" },
 ];
 
 export default function AdminDashboard() {

@@ -28,6 +28,45 @@ function useReveal(threshold = 0.1) {
   return ref;
 }
 
+function useMobileSnap() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (!isMobile) return;
+    const container = containerRef.current;
+    if (!container) return;
+    const sections = container.querySelectorAll(".snap-section");
+    if (sections.length === 0) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const el = entry.target as HTMLElement;
+          if (entry.isIntersecting) {
+            el.classList.add("in-view");
+            el.classList.remove("above-view", "below-view");
+          } else {
+            el.classList.remove("in-view");
+            const rect = entry.boundingClientRect;
+            if (rect.top < 0) {
+              el.classList.add("above-view");
+              el.classList.remove("below-view");
+            } else {
+              el.classList.add("below-view");
+              el.classList.remove("above-view");
+            }
+          }
+        });
+      },
+      { threshold: 0.25 }
+    );
+
+    sections.forEach((s) => io.observe(s));
+    return () => io.disconnect();
+  }, []);
+  return containerRef;
+}
+
 function WordStagger({ text, className }: { text: string; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
@@ -127,6 +166,7 @@ export default function HomePage() {
   const [vis, setVis] = useState<SectionVisibility | null>(null);
 
   useSpotlightCards();
+  const snapRef = useMobileSnap();
 
   const [loaded, setLoaded] = useState(false);
 
@@ -171,7 +211,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div ref={snapRef} className="min-h-screen bg-black mobile-snap-container">
       <div className="grain" />
       <Navbar />
 
@@ -179,7 +219,7 @@ export default function HomePage() {
           HERO
           ══════════════════════════════════════════════ */}
       {show("hero") && (
-        <section className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden px-6">
+        <section className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden px-6 snap-hero">
           <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black to-transparent z-[2]" />
           <div className="mesh-gradient mesh-1" style={{ top: "20%", left: "5%" }} />
           <div className="mesh-gradient mesh-2" style={{ top: "50%", right: "0%" }} />
@@ -264,7 +304,7 @@ export default function HomePage() {
           ABOUT - Büyük manifesto metni
           ══════════════════════════════════════════════ */}
       {show("about") && (
-        <section id="hakkımda" className="py-40 md:py-56 px-6">
+        <section id="hakkımda" className="py-40 md:py-56 px-6 snap-section">
           <div className="max-w-[1000px] mx-auto">
             <R><span className="label">Hakkımda</span></R>
             <RS cls="mt-10">
@@ -307,7 +347,7 @@ export default function HomePage() {
           SERVICES
           ══════════════════════════════════════════════ */}
       {show("services") && services.length > 0 && (
-        <section id="hizmetler" className="py-40 px-6">
+        <section id="hizmetler" className="py-40 px-6 snap-section">
           <div className="max-w-[1000px] mx-auto">
             <R><span className="label">Hizmetler</span></R>
             <R cls="mt-10 mb-20">
@@ -333,7 +373,7 @@ export default function HomePage() {
           PROJECTS - Full-width case studies
           ══════════════════════════════════════════════ */}
       {show("projects") && projects.length > 0 && (
-        <section id="projeler" className="py-40 px-6">
+        <section id="projeler" className="py-40 px-6 snap-section">
           <div className="max-w-[1000px] mx-auto">
             <R><span className="label">Seçili Çalışmalar</span></R>
             <R cls="mt-10 mb-20">
@@ -390,7 +430,7 @@ export default function HomePage() {
           EXPERIENCE
           ══════════════════════════════════════════════ */}
       {show("experience") && experience.length > 0 && (
-        <section id="deneyim" className="py-40 px-6">
+        <section id="deneyim" className="py-40 px-6 snap-section">
           <div className="max-w-[1000px] mx-auto">
             <R><span className="label">Deneyim</span></R>
             <R cls="mt-10 mb-20">
@@ -425,7 +465,7 @@ export default function HomePage() {
           EDUCATION
           ══════════════════════════════════════════════ */}
       {show("education") && education.length > 0 && (
-        <section id="eğitim" className="py-40 px-6">
+        <section id="eğitim" className="py-40 px-6 snap-section">
           <div className="max-w-[1000px] mx-auto">
             <R><span className="label">Eğitim</span></R>
             <R cls="mt-10 mb-20">
@@ -457,7 +497,7 @@ export default function HomePage() {
           CERTIFICATES
           ══════════════════════════════════════════════ */}
       {show("skills") && certificates.length > 0 && (
-        <section className="pb-40 px-6">
+        <section className="pb-40 px-6 snap-section">
           <div className="max-w-[1000px] mx-auto">
             <R><span className="label flex items-center gap-2"><Award className="w-3.5 h-3.5" /> Sertifikalar</span></R>
             <div className="mt-10">
@@ -481,7 +521,7 @@ export default function HomePage() {
           BLOG + NEWS
           ══════════════════════════════════════════════ */}
       {(show("blog") || show("news")) && (
-        <section className="py-40 px-6">
+        <section className="py-40 px-6 snap-section">
           <div className="max-w-[1000px] mx-auto grid md:grid-cols-2 gap-4">
             {show("blog") && (
               <R d="d1">
@@ -519,7 +559,7 @@ export default function HomePage() {
           CONTACT CTA
           ══════════════════════════════════════════════ */}
       {show("contact") && (
-        <section id="iletisim" className="py-48 md:py-56 px-6 relative overflow-hidden">
+        <section id="iletisim" className="py-48 md:py-56 px-6 relative overflow-hidden snap-section">
           <div className="mesh-gradient mesh-1" style={{ top: "10%", right: "10%" }} />
           <div className="mesh-gradient mesh-2" style={{ bottom: "10%", left: "15%" }} />
           <div className="relative z-10 max-w-[1000px] mx-auto text-center">

@@ -23,7 +23,6 @@ export function Footer() {
           <span>© {new Date().getFullYear()} Samet Elbeylioğlu</span>
           <Link href="/blog" className="hover:text-[#6e6e73] transition-colors">Blog</Link>
           <Link href="/haberler" className="hover:text-[#6e6e73] transition-colors">Haberler</Link>
-          <Link href="/admin" className="hover:text-[#6e6e73] transition-colors font-mono">/admin</Link>
         </div>
         {socials.length > 0 && (
           <div className="flex gap-3">

@@ -10,19 +10,19 @@ import {
 import { isAuthenticated, logout, getUsername } from "@/lib/auth";
 
 const navItems = [
-  { href: "/admin", icon: LayoutDashboard, label: "Panel" },
-  { href: "/admin/profile", icon: User, label: "Profil" },
-  { href: "/admin/about", icon: Info, label: "Hakkımda" },
-  { href: "/admin/services", icon: Briefcase, label: "Hizmetler" },
-  { href: "/admin/projects", icon: FolderKanban, label: "Projeler" },
-  { href: "/admin/skills", icon: Code2, label: "Yetenekler" },
-  { href: "/admin/experience", icon: Briefcase, label: "Deneyim" },
-  { href: "/admin/education", icon: GraduationCap, label: "Eğitim" },
-  { href: "/admin/certificates", icon: Award, label: "Sertifikalar" },
-  { href: "/admin/blog", icon: FileText, label: "Blog" },
-  { href: "/admin/news", icon: Newspaper, label: "Haberler" },
-  { href: "/admin/contact", icon: Phone, label: "İletişim" },
-  { href: "/admin/settings", icon: Settings, label: "Ayarlar" },
+  { href: "/nuliyuyu", icon: LayoutDashboard, label: "Panel" },
+  { href: "/nuliyuyu/profile", icon: User, label: "Profil" },
+  { href: "/nuliyuyu/about", icon: Info, label: "Hakkımda" },
+  { href: "/nuliyuyu/services", icon: Briefcase, label: "Hizmetler" },
+  { href: "/nuliyuyu/projects", icon: FolderKanban, label: "Projeler" },
+  { href: "/nuliyuyu/skills", icon: Code2, label: "Yetenekler" },
+  { href: "/nuliyuyu/experience", icon: Briefcase, label: "Deneyim" },
+  { href: "/nuliyuyu/education", icon: GraduationCap, label: "Eğitim" },
+  { href: "/nuliyuyu/certificates", icon: Award, label: "Sertifikalar" },
+  { href: "/nuliyuyu/blog", icon: FileText, label: "Blog" },
+  { href: "/nuliyuyu/news", icon: Newspaper, label: "Haberler" },
+  { href: "/nuliyuyu/contact", icon: Phone, label: "İletişim" },
+  { href: "/nuliyuyu/settings", icon: Settings, label: "Ayarlar" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -33,14 +33,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (pathname === "/admin/login") {
+    if (pathname === "/nuliyuyu/login") {
       setChecked(true);
       setAuthed(false);
       return;
     }
     const ok = isAuthenticated();
     if (!ok) {
-      router.replace("/admin/login");
+      router.replace("/nuliyuyu/login");
     } else {
       setAuthed(true);
     }
@@ -51,7 +51,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setSidebarOpen(false);
   }, [pathname]);
 
-  if (pathname === "/admin/login") {
+  if (pathname === "/nuliyuyu/login") {
     return <>{children}</>;
   }
 
@@ -61,7 +61,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const handleLogout = () => {
     logout();
-    router.replace("/admin/login");
+    router.replace("/nuliyuyu/login");
   };
 
   return (
