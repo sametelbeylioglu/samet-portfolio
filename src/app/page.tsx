@@ -343,38 +343,33 @@ export default function HomePage() {
             <div className="space-y-4">
               {projects.slice(0, 4).map((p, i) => (
                 <RS key={p.id}>
-                  <div className="spotlight-card group">
-                    {p.image && (
-                      <div className="img-zoom">
-                        <img src={p.image} alt={p.title} className="w-full aspect-[2.2/1] object-cover" style={{ borderRadius: "16px 16px 0 0" }} />
-                      </div>
-                    )}
-                    <div className="p-8 md:p-10 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-3">
-                          {p.year && <span className="font-mono text-[11px] text-[#3a3a3c]">{p.year}</span>}
-                          {p.category && <span className="tag">{p.category}</span>}
+                  <Link href={`/projeler?id=${p.id}`} className="block">
+                    <div className="spotlight-card group">
+                      {p.image && (
+                        <div className="img-zoom">
+                          <img src={p.image} alt={p.title} className="w-full aspect-[2.2/1] object-cover" style={{ borderRadius: "16px 16px 0 0" }} />
                         </div>
-                        <h3 className="text-[#f5f5f7] text-2xl md:text-[28px] font-bold tracking-[-0.03em] mb-3">{p.title}</h3>
-                        <p className="text-[#6e6e73] text-[15px] leading-[1.6] max-w-xl">{p.description}</p>
-                        {p.tags && p.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-5">
-                            {p.tags.slice(0, 5).map((t) => <span key={t} className="tag">{t}</span>)}
-                          </div>
-                        )}
-                      </div>
-                      {(p.demoUrl || p.githubUrl || p.url || p.github) && (
-                        <a
-                          href={p.demoUrl || p.url || p.githubUrl || p.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-10 h-10 rounded-full border border-[rgba(255,255,255,0.06)] flex items-center justify-center text-[#3a3a3c] group-hover:text-[#f5f5f7] group-hover:border-[rgba(255,255,255,0.15)] transition-all shrink-0"
-                        >
-                          <ArrowUpRight className="w-4 h-4" />
-                        </a>
                       )}
+                      <div className="p-8 md:p-10 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 mb-3">
+                            {p.year && <span className="font-mono text-[11px] text-[#3a3a3c]">{p.year}</span>}
+                            {p.category && <span className="tag">{p.category}</span>}
+                          </div>
+                          <h3 className="text-[#f5f5f7] text-2xl md:text-[28px] font-bold tracking-[-0.03em] mb-3">{p.title}</h3>
+                          <p className="text-[#6e6e73] text-[15px] leading-[1.6] max-w-xl">{p.description}</p>
+                          {p.tags && p.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-5">
+                              {p.tags.slice(0, 5).map((t) => <span key={t} className="tag">{t}</span>)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="w-10 h-10 rounded-full border border-[rgba(255,255,255,0.06)] flex items-center justify-center text-[#3a3a3c] group-hover:text-[#f5f5f7] group-hover:border-[rgba(255,255,255,0.15)] transition-all shrink-0">
+                          <ArrowUpRight className="w-4 h-4" />
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 </RS>
               ))}
             </div>
