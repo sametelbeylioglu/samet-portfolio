@@ -52,9 +52,10 @@ export default function AdminDashboard() {
 
       try {
         const value = JSON.parse(raw);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error } = await supabase
           .from("site_data")
-          .upsert({ key, value, updated_at: new Date().toISOString() });
+          .upsert({ key, value, updated_at: new Date().toISOString() } as any);
 
         if (error) {
           console.error(`Sync failed for ${key}:`, error.message);

@@ -14,8 +14,9 @@ async function getStorageItem<T>(key: string): Promise<T | null> {
         .select("value")
         .eq("key", key)
         .single();
-      if (!error && data && data.value !== null && data.value !== undefined) {
-        return data.value as T;
+      const row = data as { value: T } | null;
+      if (!error && row && row.value !== null && row.value !== undefined) {
+        return row.value;
       }
     }
   } catch (_) {}
@@ -28,9 +29,10 @@ async function setStorageItem<T>(key: string, value: T): Promise<void> {
   try {
     const supabase = getSupabase();
     if (supabase) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await supabase
         .from("site_data")
-        .upsert({ key, value, updated_at: new Date().toISOString() });
+        .upsert({ key, value, updated_at: new Date().toISOString() } as any);
       if (error) console.error("Supabase write error:", error.message);
     }
   } catch (e) {
