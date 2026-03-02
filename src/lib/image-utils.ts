@@ -94,7 +94,7 @@ export async function uploadImage(
         .getPublicUrl(data.path);
       return urlData.publicUrl;
     }
-    console.error("Storage upload error:", error?.message);
+    if (process.env.NODE_ENV === "development") console.error("Storage upload error:", error?.message);
   }
 
   return blobToDataUrl(blob);

@@ -33,10 +33,10 @@ async function setStorageItem<T>(key: string, value: T): Promise<void> {
       const { error } = await supabase
         .from("site_data")
         .upsert({ key, value, updated_at: new Date().toISOString() } as any);
-      if (error) console.error("Supabase write error:", error.message);
+      if (error && process.env.NODE_ENV === "development") console.error("Supabase write error:", error.message);
     }
   } catch (e) {
-    console.error("Supabase write exception:", e);
+    if (process.env.NODE_ENV === "development") console.error("Supabase write exception:", e);
   }
   try {
     localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));

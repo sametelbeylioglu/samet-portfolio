@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { isAuthenticated, logout, getUsername } from "@/lib/auth";
 
+
 const navItems = [
   { href: "/nuliyuyu", icon: LayoutDashboard, label: "Panel" },
   { href: "/nuliyuyu/profile", icon: User, label: "Profil" },
@@ -31,6 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [checked, setChecked] = useState(false);
   const [authed, setAuthed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [username, setUsernameState] = useState("");
 
   useEffect(() => {
     if (pathname === "/nuliyuyu/login") {
@@ -38,13 +40,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       setAuthed(false);
       return;
     }
-    const ok = isAuthenticated();
-    if (!ok) {
-      router.replace("/nuliyuyu/login");
-    } else {
-      setAuthed(true);
-    }
-    setChecked(true);
+    isAuthenticated().then(async (ok) => {
+      if (!ok) {
+        router.replace("/nuliyuyu/login");
+      } else {
+        setAuthed(true);
+        const name = await getUsername();
+        setUsernameState(name);
+      }
+      setChecked(true);
+    });
   }, [pathname, router]);
 
   useEffect(() => {
@@ -59,8 +64,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return <div className="min-h-screen bg-black" />;
   }
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     router.replace("/nuliyuyu/login");
   };
 
@@ -94,7 +99,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex items-center justify-between mb-8">
           <div>
             <p className="text-[#f5f5f7] text-sm font-semibold tracking-[-0.02em]">samet<span className="text-[#3a3a3c]">.</span></p>
-            <p className="text-[10px] text-[#3a3a3c] font-mono mt-0.5">ADMIN · {getUsername()}</p>
+            <p className="text-[10px] text-[#3a3a3c] font-mono mt-0.5">ADMIN · {username}</p>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#6e6e73] hover:text-[#f5f5f7] hover:bg-[rgba(255,255,255,0.04)] transition-all">
             <X className="w-[18px] h-[18px]" />

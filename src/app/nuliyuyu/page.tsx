@@ -58,13 +58,13 @@ export default function AdminDashboard() {
           .upsert({ key, value, updated_at: new Date().toISOString() } as any);
 
         if (error) {
-          console.error(`Sync failed for ${key}:`, error.message);
+          if (process.env.NODE_ENV === "development") console.error(`Sync failed for ${key}:`, error.message);
           failed++;
         } else {
           synced++;
         }
       } catch (e) {
-        console.error(`Parse/sync error for ${key}:`, e);
+        if (process.env.NODE_ENV === "development") console.error(`Parse/sync error for ${key}:`, e);
         failed++;
       }
     }
