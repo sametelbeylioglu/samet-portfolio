@@ -27,7 +27,14 @@ async function setStorageItem<T>(key: string, value: T): Promise<void> {
       await table.upsert({ key, value, updated_at: new Date().toISOString() });
     }
   } catch (_) {}
-  localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
+  try {
+    localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "QuotaExceededError") {
+      throw new Error("STORAGE_FULL");
+    }
+    throw e;
+  }
 }
 
 // Types

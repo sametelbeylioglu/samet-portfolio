@@ -5,11 +5,13 @@ import Link from "next/link";
 import { Plus, Trash2, Eye, ExternalLink } from "lucide-react";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { getBlogPosts, setBlogPosts, type BlogPost } from "@/lib/content-manager";
+import { compressImage } from "@/lib/image-utils";
 
 export default function AdminBlogPage() {
   const [posts, setPostsState] = useState<BlogPost[]>([]);
   const [editing, setEditing] = useState<BlogPost | null>(null);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     getBlogPosts().then(setPostsState);
@@ -39,17 +41,30 @@ export default function AdminBlogPage() {
   };
 
   const save = async () => {
-    await setBlogPosts(posts);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setError("");
+    try {
+      await setBlogPosts(posts);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (e) {
+      if (e instanceof Error && e.message === "STORAGE_FULL") {
+        setError("Depolama alanı dolu. Görselleri küçültün veya bazı verileri silin.");
+      } else {
+        setError("Kaydetme sırasında bir hata oluştu.");
+      }
+    }
   };
 
-  const handleImage = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImage = async (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => update(id, { image: reader.result as string });
-    reader.readAsDataURL(file);
+    setError("");
+    try {
+      const dataUrl = await compressImage(file, { maxWidth: 1200, maxHeight: 800, quality: 0.75 });
+      update(id, { image: dataUrl });
+    } catch {
+      setError("Görsel sıkıştırılamadı.");
+    }
   };
 
   return (
@@ -66,6 +81,12 @@ export default function AdminBlogPage() {
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-6 p-4 rounded-xl bg-[rgba(255,69,58,0.1)] border border-[rgba(255,69,58,0.2)] text-[#ff453a] text-sm">
+          {error}
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 gap-8">
         <div className="space-y-4">

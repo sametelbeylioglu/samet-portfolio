@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getProfile, getHero, setProfile, setHero, type Profile, type HeroContent } from "@/lib/content-manager";
+import { compressImage } from "@/lib/image-utils";
 
 export default function AdminProfilePage() {
   const [profile, setProfileState] = useState<Profile>({ name: "", title: "", bio: "" });
@@ -14,6 +15,7 @@ export default function AdminProfilePage() {
     ctaLink: "/#projeler",
   });
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     getProfile().then((p) => p && setProfileState(p));
@@ -21,22 +23,34 @@ export default function AdminProfilePage() {
   }, []);
 
   const handleSave = async () => {
-    await setProfile(profile);
-    await setHero(hero);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setError("");
+    try {
+      await setProfile(profile);
+      await setHero(hero);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (e) {
+      if (e instanceof Error && e.message === "STORAGE_FULL") {
+        setError("Depolama alanı dolu. Görselleri küçültün veya bazı verileri silin.");
+      } else {
+        setError("Kaydetme sırasında bir hata oluştu.");
+      }
+    }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, field: "profile" | "hero") => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "profile" | "hero") => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
+    setError("");
+    try {
+      const maxW = field === "profile" ? 400 : 1200;
+      const maxH = field === "profile" ? 400 : 1200;
+      const dataUrl = await compressImage(file, { maxWidth: maxW, maxHeight: maxH, quality: 0.75 });
       if (field === "profile") setProfileState((p) => ({ ...p, image: dataUrl }));
       else setHeroState((h) => ({ ...h, image: dataUrl }));
-    };
-    reader.readAsDataURL(file);
+    } catch {
+      setError("Görsel sıkıştırılamadı. Farklı bir dosya deneyin.");
+    }
   };
 
   return (
@@ -50,6 +64,12 @@ export default function AdminProfilePage() {
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-6 p-4 rounded-xl bg-[rgba(255,69,58,0.1)] border border-[rgba(255,69,58,0.2)] text-[#ff453a] text-sm">
+          {error}
+        </div>
+      )}
 
       <div className="space-y-8">
         <div className="glass rounded-2xl border border-[rgba(255,255,255,0.04)] p-6">

@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Trash2 } from "lucide-react";
 import { getProjects, setProjects, type Project } from "@/lib/content-manager";
+import { compressImage } from "@/lib/image-utils";
 
 export default function AdminProjectsPage() {
   const [projects, setProjectsState] = useState<Project[]>([]);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     getProjects().then(setProjectsState);
@@ -34,18 +36,31 @@ export default function AdminProjectsPage() {
   };
 
   const save = async () => {
-    const withOrder = projects.map((p, i) => ({ ...p, order: i }));
-    await setProjects(withOrder);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setError("");
+    try {
+      const withOrder = projects.map((p, i) => ({ ...p, order: i }));
+      await setProjects(withOrder);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (e) {
+      if (e instanceof Error && e.message === "STORAGE_FULL") {
+        setError("Depolama alanı dolu. Görselleri küçültün veya bazı verileri silin.");
+      } else {
+        setError("Kaydetme sırasında bir hata oluştu.");
+      }
+    }
   };
 
-  const handleImage = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImage = async (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => update(id, { image: reader.result as string });
-    reader.readAsDataURL(file);
+    setError("");
+    try {
+      const dataUrl = await compressImage(file, { maxWidth: 1200, maxHeight: 800, quality: 0.75 });
+      update(id, { image: dataUrl });
+    } catch {
+      setError("Görsel sıkıştırılamadı.");
+    }
   };
 
   return (
@@ -62,6 +77,12 @@ export default function AdminProjectsPage() {
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-6 p-4 rounded-xl bg-[rgba(255,69,58,0.1)] border border-[rgba(255,69,58,0.2)] text-[#ff453a] text-sm">
+          {error}
+        </div>
+      )}
 
       <div className="space-y-4">
         {projects.map((p) => (
