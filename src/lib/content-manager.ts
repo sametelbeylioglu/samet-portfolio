@@ -44,6 +44,7 @@ export interface Profile {
   bio: string;
   image?: string;
   resumeUrl?: string;
+  availableForWork?: boolean;
 }
 
 export interface HeroContent {

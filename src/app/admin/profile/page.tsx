@@ -106,6 +106,21 @@ export default function AdminProfilePage() {
           <h2 className="text-[11px] text-[#6e6e73] font-mono tracking-[0.15em] uppercase mb-6">Hero Ayarları</h2>
           <p className="text-[12px] text-[#48484a] mb-6 leading-relaxed">Ana sayfa hero bölümünün ek ayarları.</p>
           <div className="space-y-5">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-[#1d1d1f] border border-[rgba(255,255,255,0.08)]">
+              <div>
+                <p className="text-sm text-[#f5f5f7] font-medium">
+                  {profile.availableForWork !== false ? "Available for work" : "Not available"}
+                </p>
+                <p className="text-[11px] text-[#48484a] mt-0.5">Hero üstündeki durum göstergesi</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setProfileState((p) => ({ ...p, availableForWork: p.availableForWork === false ? true : false }))}
+                className={`relative w-11 h-6 rounded-full transition-colors ${profile.availableForWork !== false ? "bg-[#30d158]" : "bg-[#3a3a3c]"}`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${profile.availableForWork !== false ? "translate-x-5" : "translate-x-0"}`} />
+              </button>
+            </div>
             <div>
               <label className="text-xs text-[#6e6e73] block mb-1.5">Karşılama Metni <span className="text-[#48484a]">— ismin üstünde küçük yazı (boş bırakılabilir)</span></label>
               <input value={hero.greeting} onChange={(e) => setHeroState((h) => ({ ...h, greeting: e.target.value }))} placeholder="örn: Merhaba, ben" className="w-full bg-[#1d1d1f] border border-[rgba(255,255,255,0.08)] text-[#f5f5f7] placeholder:text-[#48484a] rounded-xl px-4 py-3 text-sm outline-none focus:border-[rgba(255,255,255,0.15)] transition-colors" />

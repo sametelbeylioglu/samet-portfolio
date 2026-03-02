@@ -148,6 +148,7 @@ export default function HomePage() {
     bio: profile?.bio ?? "",
     image: profile?.image,
     resumeUrl: profile?.resumeUrl,
+    availableForWork: profile?.availableForWork,
   };
   const h: HeroContent = {
     greeting: hero?.greeting ?? "",
@@ -186,8 +187,10 @@ export default function HomePage() {
           <div className="relative z-10 text-center max-w-[900px]">
             <R d="d1">
               <div className="inline-flex items-center gap-2.5 mb-10">
-                <span className="dot-pulse" />
-                <span className="text-[11px] text-[#6e6e73] font-mono tracking-[0.2em] uppercase">Available for work</span>
+                <span className={pr.availableForWork !== false ? "dot-pulse" : "w-2 h-2 rounded-full bg-[#48484a]"} />
+                <span className="text-[11px] text-[#6e6e73] font-mono tracking-[0.2em] uppercase">
+                  {pr.availableForWork !== false ? "Available for work" : "Not available right now"}
+                </span>
               </div>
             </R>
 
