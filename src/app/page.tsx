@@ -271,7 +271,7 @@ export default function HomePage() {
             )}
 
             <R d="d5">
-              <div className="flex flex-wrap gap-3 justify-center">
+              <div className="hidden md:flex flex-wrap gap-3 justify-center">
                 <Link href={h.ctaLink} className="btn-primary">{h.ctaText} <ArrowRight className="w-4 h-4" /></Link>
                 <Link href="/#iletisim" className="btn-secondary">İletişim <ArrowUpRight className="w-4 h-4" /></Link>
               </div>

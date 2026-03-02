@@ -22,8 +22,8 @@ export function Navbar() {
   }, []);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-[9990] transition-all duration-500 ${scrolled ? "bg-black/80 backdrop-blur-xl" : ""}`}>
-      <nav className="max-w-[1000px] mx-auto flex h-12 items-center justify-between px-6">
+    <header className={`fixed top-0 left-0 right-0 z-[9990] transition-all duration-500 ${scrolled ? "bg-black/80 backdrop-blur-xl" : ""}`} style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
+      <nav className="max-w-[1000px] mx-auto flex h-12 items-center justify-between px-6 pt-0">
         <Link href="/" className="text-[#f5f5f7] text-[13px] font-semibold tracking-[-0.02em] hover:opacity-60 transition-opacity" onClick={() => setOpen(false)}>
           samet<span className="text-[#3a3a3c]">.</span>
         </Link>
