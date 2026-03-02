@@ -23,6 +23,42 @@ interface DevToArticle {
 }
 
 const DEVTO_TAGS = ["design", "webdev", "ai", "uxdesign", "vibecoding"];
+const SEP = "\n||||\n";
+
+async function translateBatch(texts: string[]): Promise<string[]> {
+  if (texts.length === 0) return [];
+  const chunks: string[][] = [];
+  let current: string[] = [];
+  let len = 0;
+  for (const t of texts) {
+    if (len + t.length > 4000 && current.length > 0) {
+      chunks.push(current);
+      current = [];
+      len = 0;
+    }
+    current.push(t);
+    len += t.length + SEP.length;
+  }
+  if (current.length > 0) chunks.push(current);
+
+  const translated: string[] = [];
+  for (const chunk of chunks) {
+    const combined = chunk.join(SEP);
+    try {
+      const res = await fetch(
+        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=tr&dt=t&q=${encodeURIComponent(combined)}`
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data: any = await res.json();
+      const full = (data[0] as [string][]).map((s) => s[0]).join("");
+      const parts = full.split("||||").map((s: string) => s.trim());
+      translated.push(...parts);
+    } catch {
+      translated.push(...chunk);
+    }
+  }
+  return translated;
+}
 
 async function fetchByTag(tag: string): Promise<DevToArticle[]> {
   try {
@@ -48,12 +84,21 @@ async function fetchDevToArticles(): Promise<NewsItem[]> {
   });
 
   unique.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+  const sliced = unique.slice(0, 25);
 
-  return unique.slice(0, 25).map((a) => ({
+  const titles = sliced.map((a) => a.title);
+  const descs = sliced.map((a) => a.description);
+
+  const [trTitles, trDescs] = await Promise.all([
+    translateBatch(titles),
+    translateBatch(descs),
+  ]);
+
+  return sliced.map((a, i) => ({
     id: `devto-${a.id}`,
-    title: a.title,
-    content: a.description,
-    summary: a.description,
+    title: trTitles[i] ?? a.title,
+    content: trDescs[i] ?? a.description,
+    summary: trDescs[i] ?? a.description,
     source: `dev.to / ${a.user.name}`,
     url: a.url,
     date: a.published_at.slice(0, 10),
