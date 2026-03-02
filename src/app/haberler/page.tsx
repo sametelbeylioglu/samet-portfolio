@@ -22,30 +22,43 @@ interface DevToArticle {
   reading_time_minutes: number;
 }
 
-const DEVTO_TAGS = ["design", "webdev", "ai", "uxdesign", "coding"];
+const DEVTO_TAGS = ["design", "webdev", "ai", "uxdesign", "vibecoding"];
 
-async function fetchDevToArticles(): Promise<NewsItem[]> {
+async function fetchByTag(tag: string): Promise<DevToArticle[]> {
   try {
-    const tagQuery = DEVTO_TAGS.join(",");
     const res = await fetch(
-      `https://dev.to/api/articles?tag=${tagQuery}&per_page=20&top=7`
+      `https://dev.to/api/articles?tag=${tag}&per_page=8&top=7`
     );
     if (!res.ok) return [];
-    const articles: DevToArticle[] = await res.json();
-
-    return articles.map((a) => ({
-      id: `devto-${a.id}`,
-      title: a.title,
-      content: a.description,
-      summary: a.description,
-      source: `dev.to / ${a.user.name}`,
-      url: a.url,
-      date: a.published_at.slice(0, 10),
-      image: a.cover_image || a.social_image || undefined,
-    }));
+    return await res.json();
   } catch {
     return [];
   }
+}
+
+async function fetchDevToArticles(): Promise<NewsItem[]> {
+  const results = await Promise.all(DEVTO_TAGS.map(fetchByTag));
+  const all = results.flat();
+
+  const seen = new Set<number>();
+  const unique = all.filter((a) => {
+    if (seen.has(a.id)) return false;
+    seen.add(a.id);
+    return true;
+  });
+
+  unique.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+
+  return unique.slice(0, 25).map((a) => ({
+    id: `devto-${a.id}`,
+    title: a.title,
+    content: a.description,
+    summary: a.description,
+    source: `dev.to / ${a.user.name}`,
+    url: a.url,
+    date: a.published_at.slice(0, 10),
+    image: a.cover_image || a.social_image || undefined,
+  }));
 }
 
 function useReveal() {
